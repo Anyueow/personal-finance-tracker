@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 Event Triggers for Personal Finance Tracker'
+
+Parameters:
+  RawBucketName:
+    Type: String
+    Default: ds4300-ananya-raw-transactions
+    Description: Name of the raw transactions bucket
+  
+  CleanedBucketName:
+    Type: String
+    Default: ds4300-ananya-cleaned-transactions
+    Description: Name of the cleaned transactions bucket
+  
+  ProcessFunctionName:
+    Type: String
+    Default: ds4300-func
+    Description: Name of the processing Lambda function
+  
+  CategorizeFunctionName:
+    Type: String
+    Default: ds4300-categorize-func
+    Description: Name of the categorization Lambda function
+
+Resources:
+  # Lambda permissions for S3 triggers
+  ProcessLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ProcessFunctionName
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub arn:aws:s3:::${RawBucketName}
+
+  CategorizeLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CategorizeFunctionName
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub arn:aws:s3:::${CleanedBucketName}
+
+  # S3 bucket notifications
+  RawBucketNotification:
+    Type: AWS::S3::BucketNotification
+    Properties:
+      Bucket: !Ref RawBucketName
+      LambdaConfigurations:
+        - Event: s3:ObjectCreated:*
+          Function: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ProcessFunctionName}
+          Filter:
+            S3Key:
+              Rules:
+                - Name: suffix
+                  Value: .csv
+
+  CleanedBucketNotification:
+    Type: AWS::S3::BucketNotification
+    Properties:
+      Bucket: !Ref CleanedBucketName
+      LambdaConfigurations:
+        - Event: s3:ObjectCreated:*
+          Function: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${CategorizeFunctionName}
+          Filter:
+            S3Key:
+              Rules:
+                - Name: prefix
+                  Value: cleaned_
+                - Name: suffix
+                  Value: .csv
+
+Outputs:
+  RawBucketNotificationArn:
+    Description: ARN of the raw bucket notification configuration
+    Value: !Sub arn:aws:s3:::${RawBucketName}
+
+  CleanedBucketNotificationArn:
+    Description: ARN of the cleaned bucket notification configuration
+    Value: !Sub arn:aws:s3:::${CleanedBucketName} 

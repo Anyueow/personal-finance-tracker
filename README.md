@@ -38,17 +38,25 @@ The system uses two Lambda functions that are automatically triggered by S3 even
    - Automatically categorizes transactions using keyword matching
    - Outputs files with prefix "categorized_" to the cleaned bucket
 
-To deploy both functions and set up S3 triggers:
+To deploy the Lambda functions:
 ```bash
 chmod +x scripts/deploy_lambda.sh
 ./scripts/deploy_lambda.sh
 ```
 
-The deployment script:
-- Creates/updates both Lambda functions
-- Configures environment variables
-- Sets up S3 event triggers
-- Adds necessary IAM permissions
+To configure S3 event triggers using CloudFormation:
+```bash
+chmod +x scripts/deploy_triggers.sh
+./scripts/deploy_triggers.sh
+```
+
+The deployment scripts:
+- Create/update both Lambda functions
+- Configure environment variables
+- Set up S3 event triggers using CloudFormation for better reliability:
+  - Raw bucket → Process Lambda (triggers on .csv files)
+  - Cleaned bucket → Categorize Lambda (triggers on cleaned_*.csv files)
+- Add necessary IAM permissions
 
 ### 3. EC2 Setup
 
@@ -177,9 +185,15 @@ RDS_DB=finance_tracker
 ├── setup_and_validate.sh    # Main setup script
 ├── .env                     # Environment variables
 ├── requirements.txt         # Python dependencies
+├── cloudformation/         # Infrastructure as Code
+│   └── s3-triggers.yaml   # S3 event trigger configuration
 ├── lambda_functions/        # AWS Lambda functions
 │   ├── process_transactions.py  # Initial data processing
 │   └── categorize_transactions.py  # Transaction categorization
+├── scripts/               # Deployment and setup scripts
+│   ├── deploy_lambda.sh  # Lambda function deployment
+│   ├── deploy_triggers.sh # CloudFormation stack deployment
+│   └── setup_ec2.sh     # EC2 instance setup
 ├── streamlit_app/          # Frontend application
 └── sql/                    # Database schemas
 ```
