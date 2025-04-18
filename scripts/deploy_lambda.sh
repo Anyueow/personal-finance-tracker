@@ -2,12 +2,12 @@
 
 # Create deployment package
 cd lambda_functions
-zip -r ../deployment.zip .
+zip -r ../new_deployment.zip .
 
 # Deploy to Lambda
 aws lambda update-function-code \
     --function-name ds4300-func \
-    --zip-file fileb://../deployment.zip \
+    --zip-file fileb://../new_deployment.zip \
     --region us-east-2
 
 # Update environment variables
@@ -17,4 +17,4 @@ aws lambda update-function-configuration \
     --region us-east-2
 
 # Clean up
-rm ../deployment.zip 
+rm ../new_deployment.zip 
