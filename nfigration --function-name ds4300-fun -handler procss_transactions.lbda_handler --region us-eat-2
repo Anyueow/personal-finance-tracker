@@ -1,0 +1,57 @@
+{
+    "FunctionName": "ds4300-func",
+    "FunctionArn": "arn:aws:lambda:us-east-2:340752810672:function:ds4300-func",
+    "Runtime": "python3.9",
+    "Role": "arn:aws:iam::340752810672:role/ds4300-role",
+    "Handler": "lambda_function.lambda_handler",
+    "CodeSize": 1257,
+    "Description": "ds4300-execrole",
+    "Timeout": 30,
+    "MemorySize": 512,
+    "LastModified": "2025-04-18T17:30:20.000+0000",
+    "CodeSha256": "JXm4XZxsbAavKb/R7ktteoQodnnO29QWd0wKnrV4vrY=",
+    "Version": "$LATEST",
+    "Environment": {
+        "Variables": {
+            "RDS_HOST": "ds4300-aces-rds.ctka88maap7u.us-east-2.rds.amazonaws.com",
+            "RDS_PASSWORD": "admin606*",
+            "CLEANED_BUCKET": "ds4300-ananya-cleaned-transactions",
+            "RDS_PORT": "3306",
+            "RDS_USER": "admin",
+            "RAW_BUCKET": "ds4300-ananya-raw-transactions",
+            "RDS_DB": "finance_tracker"
+        }
+    },
+    "TracingConfig": {
+        "Mode": "PassThrough"
+    },
+    "RevisionId": "fd519310-727e-4523-9d0f-ed0c0e511ac5",
+    "Layers": [
+        {
+            "Arn": "arn:aws:lambda:us-east-2:340752810672:layer:pandas-layer:2",
+            "CodeSize": 28019212
+        }
+    ],
+    "State": "Active",
+    "LastUpdateStatus": "InProgress",
+    "LastUpdateStatusReason": "The function is being created.",
+    "LastUpdateStatusReasonCode": "Creating",
+    "PackageType": "Zip",
+    "Architectures": [
+        "x86_64"
+    ],
+    "EphemeralStorage": {
+        "Size": 512
+    },
+    "SnapStart": {
+        "ApplyOn": "None",
+        "OptimizationStatus": "Off"
+    },
+    "RuntimeVersionConfig": {
+        "RuntimeVersionArn": "arn:aws:lambda:us-east-2::runtime:c88c82727548b4b718883e305881b033842dceea07a5c4914a1258f41c91d3b7"
+    },
+    "LoggingConfig": {
+        "LogFormat": "Text",
+        "LogGroup": "/aws/lambda/ds4300-func"
+    }
+}

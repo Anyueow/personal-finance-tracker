@@ -6,7 +6,7 @@ A real-time personal finance tracking system with ML-powered insights.
 
 The system consists of:
 - S3 buckets for raw and cleaned data storage
-- Lambda function for initial data processing
+- Two Lambda functions for data processing and categorization
 - EC2 instance running ML processor and Streamlit dashboard
 - RDS database for storing processed data and insights
 
@@ -24,14 +24,31 @@ The system consists of:
    mysql -h <RDS_HOST> -u <RDS_USER> -p < sql/schema.sql
    ```
 
-### 2. Lambda Deployment
+### 2. Lambda Functions and Data Pipeline
 
-1. Ensure AWS CLI is configured with appropriate credentials
-2. Run the deployment script:
-   ```bash
-   chmod +x scripts/deploy_lambda.sh
-   ./scripts/deploy_lambda.sh
-   ```
+The system uses two Lambda functions that are automatically triggered by S3 events:
+
+1. **Transaction Processing** (`ds4300-func`)
+   - Triggered when files are uploaded to the raw transactions bucket
+   - Cleans and standardizes transaction data
+   - Outputs files with prefix "cleaned_" to the cleaned bucket
+
+2. **Transaction Categorization** (`ds4300-categorize-func`)
+   - Triggered when cleaned files appear in the cleaned bucket
+   - Automatically categorizes transactions using keyword matching
+   - Outputs files with prefix "categorized_" to the cleaned bucket
+
+To deploy both functions and set up S3 triggers:
+```bash
+chmod +x scripts/deploy_lambda.sh
+./scripts/deploy_lambda.sh
+```
+
+The deployment script:
+- Creates/updates both Lambda functions
+- Configures environment variables
+- Sets up S3 event triggers
+- Adds necessary IAM permissions
 
 ### 3. EC2 Setup
 
@@ -61,8 +78,8 @@ Create a `.env` file with the following variables:
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_REGION=us-east-2
-S3_BUCKET_RAW=ds4300-ananya-raw-transactions
-S3_BUCKET_CLEANED=ds4300-ananya-cleaned-transactions
+RAW_BUCKET=ds4300-ananya-raw-transactions
+CLEANED_BUCKET=ds4300-ananya-cleaned-transactions
 RDS_HOST=your_rds_host
 RDS_USER=your_rds_user
 RDS_PASSWORD=your_rds_password
@@ -77,6 +94,29 @@ RDS_DB=finance_tracker
    ```
 2. The ML processor runs as a background service
 
+## Data Pipeline
+
+1. **Data Ingestion**
+   - Upload CSV files to the raw bucket (`ds4300-ananya-raw-transactions`)
+   - Files are automatically picked up by the processing Lambda
+
+2. **Data Processing**
+   - `ds4300-func` processes the raw files
+   - Standardizes dates and amounts
+   - Removes invalid entries
+   - Saves as `cleaned_<filename>.csv`
+
+3. **Transaction Categorization**
+   - `ds4300-categorize-func` automatically triggers
+   - Categorizes transactions using keyword matching
+   - Categories: groceries, dining, transport, utilities, entertainment, shopping, health, travel
+   - Saves as `categorized_<filename>.csv`
+
+4. **Data Analysis**
+   - EC2 instance processes categorized data
+   - Generates insights and visualizations
+   - Updates RDS database
+
 ## Monitoring
 
 - Check processor logs:
@@ -86,6 +126,11 @@ RDS_DB=finance_tracker
 - Check dashboard logs:
   ```bash
   journalctl -u finance-dashboard -f
+  ```
+- View Lambda function logs in CloudWatch:
+  ```bash
+  aws logs get-log-events --log-group-name /aws/lambda/ds4300-func
+  aws logs get-log-events --log-group-name /aws/lambda/ds4300-categorize-func
   ```
 
 ## Troubleshooting
@@ -99,7 +144,8 @@ RDS_DB=finance_tracker
 
 2. If data is not being processed:
    - Check Lambda function logs in CloudWatch
-   - Verify S3 bucket permissions
+   - Verify S3 bucket permissions and event triggers
+   - Ensure both Lambda functions have the pandas layer
    - Check processor logs on EC2
 
 3. If database connection fails:
@@ -132,8 +178,8 @@ RDS_DB=finance_tracker
 ├── .env                     # Environment variables
 ├── requirements.txt         # Python dependencies
 ├── lambda_functions/        # AWS Lambda functions
-│   ├── process_transactions.py
-│   └── categorize_transactions.py
+│   ├── process_transactions.py  # Initial data processing
+│   └── categorize_transactions.py  # Transaction categorization
 ├── streamlit_app/          # Frontend application
 └── sql/                    # Database schemas
 ```
