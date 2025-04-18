@@ -109,4 +109,4 @@ lambda_functions/package/
 # Project specific
 test_transactions.csv
 test_transactions.csv.goal
-response.json
+response.jsonlambda_functions/package/
