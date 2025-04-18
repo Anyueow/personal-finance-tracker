@@ -1,0 +1,112 @@
+/.env.example
+/env
+.env
+.pycache
+AWSCLIV2.pk
+ds4300-ananya-key.pem
+*.pem
+
+# Virtual Environment
+venv/
+*/venv/
+.venv/
+env/
+
+# PyTorch directories
+lambda_categorize/torch/
+lambda_parse/torch/
+
+# Large zip files
+parse_lambda.zip
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.dylib
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Libraries
+**/torch/
+**/numpy/
+**/pyarrow/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# Lambda functions
+*.zip
+lambda_*/**/*.zip
+
+# Large binary files
+*.dylib
+*.pkg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# AWS Lambda
+lambda_functions/package/
+*.zip
+
+# Large files
+*.csv
+*.json
+*.dylib
+*.pkg
+*.log
+*.gz
+*.tar
+*.zip
+
+# Project specific
+test_transactions.csv
+test_transactions.csv.goal
+response.json
