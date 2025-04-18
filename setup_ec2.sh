@@ -4,12 +4,12 @@
 mkdir -p ~/streamlit_app
 
 # Copy application files
-scp -i ds4300-ananya-key.pem -r streamlit_app/* ubuntu@18.116.20.166:~/streamlit_app/
-scp -i ds4300-ananya-key.pem requirements.txt ubuntu@18.116.20.166:~/
-scp -i ds4300-ananya-key.pem .env ubuntu@18.116.20.166:~/
+scp -i ds4300-ananya-key-new.pem -r streamlit_app/* ubuntu@13.59.83.116:~/streamlit_app/
+scp -i ds4300-ananya-key-new.pem requirements.txt ubuntu@13.59.83.116:~/
+scp -i ds4300-ananya-key-new.pem .env ubuntu@13.59.83.116:~/
 
 # SSH into the instance and set up the environment
-ssh -i ds4300-ananya-key.pem ubuntu@18.116.20.166 << 'EOF'
+ssh -i ds4300-ananya-key-new.pem ubuntu@13.59.83.116 << 'EOF'
     # Update package list
     sudo apt-get update
 
@@ -28,5 +28,5 @@ ssh -i ds4300-ananya-key.pem ubuntu@18.116.20.166 << 'EOF'
     nohup streamlit run app.py --server.port 8501 --server.address 0.0.0.0 > streamlit.log 2>&1 &
 
     echo "Streamlit app is starting..."
-    echo "You can access it at http://18.116.20.166:8501"
+    echo "You can access it at http://13.59.83.116:8501"
 EOF 
